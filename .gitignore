@@ -1,0 +1,9 @@
+*.mp4
+*.jpg
+*.jpeg
+*.xlsx
+*.pptx
+*.pdf
+*.png
+*.docx
+.env

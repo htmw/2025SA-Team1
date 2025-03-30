@@ -1,0 +1,30 @@
+<form method="post" action="/submit">
+    <p>Student Name: <input type="text" name="name"></p>
+
+    <label for="tutors">Choose a tutor:</label>
+    <select id="tutors" name="tutor">
+        {% if tutors %}
+            {% for t in tutors.keys() %}
+                <option value={{ tutors[t]['Name'] }}>{{ tutors[t]['Name'] }}</option>
+            {% endfor %}
+        {% endif %}
+
+    </select>
+    
+    <label for="sTime">Select Start time:</label>
+    <input type="datetime-local" id="sTime" name="sTime">
+
+    <label for="eTime">Select end time:</label>
+    <input type="datetime-local" id="eTime" name="eTime">
+
+    <p><input type="submit"></p>
+
+</form>
+{% if events %}
+    {% for p in events.keys() %}
+      <h2> {{ events[p]['StudentName'] }} </h2>
+      <h3> {{ events[p]["TutorName"] }} </h3>
+      <h3> {{ events[p]["date"] }} </h3>
+    {% endfor %}
+{% endif %}
+
