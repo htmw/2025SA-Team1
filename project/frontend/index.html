@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SchedulED</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Link to your CSS file -->
+  </head>
+  <body>
+    <header>
+      <h1>SchedulED</h1>
+    </header>
+
+    <main>
+      <section id="appointment-form">
+        <h2>Schedule a Session</h2>
+        <form>
+          <label for="student-name">Student Name:</label>
+          <input type="text" id="student-name" name="student-name" required />
+
+          <label for="subject">Subject:</label>
+          <select id="subject" name="subject" required>
+            <option value="math">Math</option>
+            <option value="science">Science</option>
+            <option value="english">English</option>
+            <option value="history">History</option>
+          </select>
+
+          <label for="tutor">Select Tutor:</label>
+          <select id="tutor" name="tutor" required>
+            <option value="Sabrina">Sabrina</option>
+            <option value="Justin">Justin</option>
+          </select>
+
+          <label for="date">Date:</label>
+          <input type="date" id="date" name="date" required />
+
+          <label for="time">Time:</label>
+          <input type="time" id="time" name="time" required />
+
+          <button type="submit">Schedule Session</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2023 Tutoring Scheduler</p>
+    </footer>
+  </body>
+</html>
