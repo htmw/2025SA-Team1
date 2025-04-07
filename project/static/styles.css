@@ -4,30 +4,30 @@ body {
     padding: 0;
     background-color: #f4f4f4;
 }
-
+ 
 header {
     background: #1613e0;
     color: white;
     padding: 10px 0;
     text-align: center;
 }
-
+ 
 main {
     padding: 20px;
 }
-
+ 
 form {
     background: white;
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
+ 
 label {
     display: block;
     margin: 10px 0 5px;
 }
-
+ 
 input, select {
     width: 100%;
     padding: 10px;
@@ -35,15 +35,40 @@ input, select {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-
+ 
+/* Styles for the login button */
 button {
-    background: #1613e0;
+    background: #1613e0; /* Keep your existing button style */
     color: white;
     border: none;
     padding: 10px;
     cursor: pointer;
 }
-
+ 
 button:hover {
-    background: #45a049;
+    background: #45a049; /* Change hover color if needed */
+}
+ 
+/* Styles for the login form container */
+#login-form {
+    max-width: 300px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+ 
+/* Styles for the Google sign-in button */
+#google-signin-button {
+    background-color: #4285F4; /* Google blue color */
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+ 
+#google-signin-button:hover {
+    background-color: #357ae8; /* Darker shade for hover */
 }

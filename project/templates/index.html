@@ -1,51 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SchedulED</title>
-    <link rel="stylesheet" href="static\styles.css" />
-    <!-- Link to your CSS file -->
-  </head>
-  <body>
-    <header>
-      <h1>SchedulED</h1>
-    </header>
-
-    <main>
-      <section id="appointment-form">
-        <h2>Schedule a Session</h2>
-        <form method="post" action="/submit">
-          <label for="student-name">Student Name:</label>
-          <input type="text" id="student-name" name="student-name" required />
-
-          <label for="subject">Subject:</label>
-          <select id="subject" name="subject" required>
-            <option value="math">Math</option>
-            <option value="science">Science</option>
-            <option value="english">English</option>
-            <option value="history">History</option>
-          </select>
-
-          <label for="tutor">Select Tutor:</label>
-          <select id="tutor" name="tutor" required>
-            <option value="Sabrina">Sabrina</option>
-            <option value="Justin">Justin</option>
-          </select>
-
-          <label for="sTime">Start Time:</label>
-          <input type="datetime-local" id="sTime" name="sTime" required />
-
-          <label for="eTime">End Time:</label>
-          <input type="datetime-local" id="eTime" name="eTime" required />
-
-          <button type="submit">Schedule Session</button>
-        </form>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2023 Tutoring Scheduler</p>
-    </footer>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SchedulED - Login</title>
+<link rel="stylesheet" href="/static/styles.css" />
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+<script src="/static/googleauth.js"></script>
+<script>
+    function gotoSignup(){
+        window.location.href = "/create-account"
+    }
+</script>
+</head>
+<body>
+<div id="login-form">
+<h2>Login</h2>
+<form action="/" method="POST">
+<label for="username">Username (Email):</label>
+<input type="text" id="username" name="username" required />
+<label for="password">Password:</label>
+<input type="password" id="password" name="password" required />
+<button type="submit">Login</button>
+<button onclick="gotoSignup()">No account? Sign up now!</button>
+<p style="color: red;"></p>
+</form>
+<button id="google-signin-button" onclick="googleSignIn()">Sign in with Google</button>
+</div>
+</body>
 </html>
