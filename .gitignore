@@ -1,9 +1,2 @@
-*.jpg
-*.jpeg
-*.xlsx
-*.pptx
-*.pdf
-*.png
-*.docx
 .env
 *.json
