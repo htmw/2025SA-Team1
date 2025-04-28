@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled - Tutor Scheduling</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #4a90e2;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 0.5em;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 1.5em;
+        }
+        .cta-button {
+            padding: 12px 30px;
+            font-size: 1em;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        footer {
+            background-color: #222;
+            color: #ccc;
+            text-align: center;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Scheduled</h1>
+        <p>Your Personal Tutor Scheduling Platform</p>
+    </header>
+
+    <main>
+        <h2>Hello, {{ user_name }}!</h2>
+        <h2>Find the Perfect Tutor and Book Instantly</h2>
+        <p>Schedule sessions with top tutors across subjects and grade levels. Learning made easy and accessible!</p>
+        <a href="#" class="cta-button">Browse Tutors</a>
+    </main>
+
+    <footer>
+        &copy; 2025 Scheduled. All rights reserved.
+    </footer>
+
+</body>
+</html>
