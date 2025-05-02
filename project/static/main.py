@@ -67,7 +67,36 @@ def delete_account_db():
         user_id = list(key.val().keys())[0]
         if(user_id == user['localId']):
             db.child("users").child(key.key()).remove()
-        
+
+def get_first_name_with_uid(uid):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()['firstname']
+
+def get_last_name_with_uid(uid):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()['lastname']
+
+def get_email_with_uid(uid):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()['email']
+
+#print(get_first_name_with_uid("TIPjcipciuX8iFDew5YxR16h54H3"))
+
 # ans = input("Are you a new user? [y/n]")
 
 # if ans == "y":
@@ -113,8 +142,8 @@ def search_for_users_with_tags(tags, user_ids = []):
       user_ids = list(dict.fromkeys(user_ids))
       return user_ids
    
-result = search_for_users_with_tags(['student', 'math'])
-print(result)
+# result = search_for_users_with_tags(['student', 'math'])
+# print(result)
 
 # keys1 = db.child("users").get()
 # for key1 in keys1:
