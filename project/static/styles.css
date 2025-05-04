@@ -72,3 +72,8 @@ button:hover {
 #google-signin-button:hover {
     background-color: #357ae8; /* Darker shade for hover */
 }
+
+#calendar {
+    max-width: 900px;
+    margin: 40px auto;
+  }
