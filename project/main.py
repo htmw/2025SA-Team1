@@ -56,39 +56,100 @@ def index():
         if user:
             return redirect('/homepage')
     return render_template('index.html')
- 
-@app.route('/create-account', methods=['GET', 'POST'])
-def signingup():
-    global user
+    
+@app.route('/update-profile', methods=['GET', 'POST'])
+def update_profile():
+    print("updating profile...")
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        firstname = request.form.get('firstName')
-        lastname = request.form.get('lastName')
-        role = request.form.get('role')
-        if password == request.form.get('confirmPassword'):
-            print("Sign up...")
+        email = session['userInfo']['email']
+        firstname = request.form.get('firstname')
+        lastname = request.form.get('lastname')
+        role = request.form.get('user-type')
+        if(request.form.getlist('subjects')):
+            subject = request.form.getlist('subjects')
+        else:
+            subject = request.form.getlist('subjects-needed')
+        if(request.form.getlist("ages")):
+            ages = request.form.getlist("ages")
+        else:
+            ages = request.form.getlist('student-age')
+        print("Sign up...")
+        print(session['userInfo']['id'])
+        if(search_for_users_with_tags([email]) == []):
             try:
-                user = authpy.create_user_with_email_and_password(email, password)
-                data = {user['localId']:{"firstname":firstname, "lastname":lastname, "email":email, "role":role}}
+                data = {session['userInfo']['id']:{"firstname":firstname, "lastname":lastname, "email":email, "role":role, "subject":subject, "ages":ages}}
                 db.child("users").push(data)
                 return redirect(url_for("homepage"))
             except Exception as e:
                 print("error has occured: ", e)
-                return redirect(url_for("error_code", ecode=400))          
-    return render_template('signup.html')
+                return redirect(url_for("error_code", ecode=400))
+        else:
+            if(firstname):
+                change_item_with_uid(session['userInfo']['id'], 'firstname', firstname)
+            if(lastname):
+                change_item_with_uid(session['userInfo']['id'], 'lastname', lastname)
+            if(role):
+                change_item_with_uid(session['userInfo']['id'], 'role', role)
+            if(subject):
+                change_item_with_uid(session['userInfo']['id'], 'subject', subject)
+            if(ages):
+                change_item_with_uid(session['userInfo']['id'], 'ages', ages)
+            return redirect(url_for("homepage"))
+    return render_template('profilePage.html')
+    
+
+# def signingup():
+#     global user
+#     if request.method == 'POST':
+#         email = request.form.get('email')
+#         password = request.form.get('password')
+#         firstname = request.form.get('firstName')
+#         lastname = request.form.get('lastName')
+#         role = request.form.get('role')
+#         if password == request.form.get('confirmPassword'):
+#             print("Sign up...")
+#             try:
+#                 user = authpy.create_user_with_email_and_password(email, password)
+#                 data = {user['localId']:{"firstname":firstname, "lastname":lastname, "email":email, "role":role}}
+#                 db.child("users").push(data)
+#                 return redirect(url_for("homepage"))
+#             except Exception as e:
+#                 print("error has occured: ", e)
+#                 return redirect(url_for("error_code", ecode=400))          
+#     return render_template('signup.html')
  
+# @app.route('/create-account-google', methods=['GET', 'POST'])
+
+
 @app.route('/homepage')
 def homepage():
+    session['role'] = get_value_with_uid_key(session['userInfo']['id'], 'role')
     return render_template('homepage.html', user_name = give_user_first_name())
 
 @app.route('/error/<ecode>')
 def error_code(ecode):
    return f"Error: {ecode}"
  
+
 @app.route('/schedule')
 def schedule():
-    return render_template('schedule.html')
+    tutors = search_for_users_with_tags(['tutor'])
+    names = []
+    for tutor in tutors:
+        names.append(get_value_with_uid_key(tutor, 'firstname'))
+    print(tutors)
+    return render_template('schedule.html', tutors_list= tutors, names_list= names, role = session['role'])
+
+'''
+<label for="tutor">Select Tutor:</label>
+          <select id="tutor" name="tutor" required>
+            <option value="Sabrina">Sabrina</option>
+            <option value="Justin">Justin</option>
+          </select>
+'''
+
+
+
 
 @app.route('/viewSchedule')
 def viewSchedule():
@@ -170,10 +231,13 @@ def oauth2callback():
         headers=headers
     ).json()
     session["userInfo"] = response
-
+    print(search_for_users_with_tags([session['userInfo']['email']]))
+    if(search_for_users_with_tags([session['userInfo']['email']]) == []):
+        print("new account")
+        return redirect(url_for("update_profile"))
     print(session["userInfo"] )
 
-    return redirect(url_for("viewSchedule"))
+    return redirect(url_for("homepage"))
 
 
 @app.route('/addTutor')
@@ -199,13 +263,11 @@ def submitFT():
 def submit():
   if request.method == 'POST' and len(dict(request.form)) > 0:
     userdata = dict(request.form)
-    name = userdata["student-name"]
     tutor = userdata["tutor"]
     startTime = f"{userdata["sTime"]}:00"
     endTime = f"{userdata["eTime"]}:00"
     print(startTime)
     print(endTime)
-    subject = userdata["subject"]
     start_time_object =datetime.strptime(startTime,"%Y-%m-%dT%H:%M:%S")
     end_time_object =datetime.strptime(endTime,"%Y-%m-%dT%H:%M:%S")
     time_diff=(end_time_object-start_time_object)
@@ -237,13 +299,24 @@ def submit():
         print(e)
         return redirect('/error/400')
     
-    new_data = {"StudentName": name, "TutorName": tutor,"StartTime":startTime,"EndTime":endTime}
+    new_data = {"StudentID": session['userInfo']['id'] ,"TutorID": tutor,"StartTime":startTime,"EndTime":endTime}
     db.child("events").push(new_data)    
 
-    return "Event Added!"
+    return redirect(url_for("calendar_page"))
   else:
     return "Sorry, there was an error."
  
+@app.route('/tutorsubmit', methods=['GET','POST'])
+def tutor_set_avaliability():
+  if request.method == 'POST' and len(dict(request.form)) > 0:
+    userdata = dict(request.form)
+    startTime = f"{userdata["aStart"]}:00"
+    endTime = f"{userdata["aEnd"]}:00"
+    change_item_with_uid(session['userInfo']['id'], 'avaliability', [startTime, endTime])
+    return redirect(url_for("calendar_page"))
+
+
+
 @app.route('/submitTutor', methods=['GET', 'POST'])
 def submitTutor():
   if request.method == 'POST' and len(dict(request.form)) > 0:
@@ -271,18 +344,35 @@ def delete_account_db():
         user_id = list(key.val().keys())[0]
         if(user_id == user['localId']):
             db.child("users").child(key.key()).remove()
-       
-def give_user_first_name():
-    global user
-    if user:
-        users = db.child("users").get()
-        for user1 in users.each():
-            user_dict = user1.val()
-            #print(user_dict)
-            user_id = list(user1.val().keys())[0]
 
-            if(user_id == user['localId']):
-                return user_dict[user_id]['firstname']
+
+def give_user_first_name():
+    users = db.child("users").get()
+    for user1 in users.each():
+        user_dict = user1.val()
+        #print(user_dict)
+        user_id = list(user1.val().keys())[0]
+
+        if(user_id == session['userInfo']['id']):
+            return user_dict[user_id]['firstname']
+
+def change_item_with_uid(uid, itemkey, itemvalue):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                db.child("users").child(key1.key()).child(key2.key()).update({itemkey:itemvalue})
+
+def get_value_with_uid_key(uid, key):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()[key]
 
 def search_for_users_with_tags(tags, user_ids = []):
    users = db.child("users").get()
@@ -290,13 +380,14 @@ def search_for_users_with_tags(tags, user_ids = []):
    if(len(tags) > 0):
        for user in users:
         user_id = list(user.val().keys())[0]
-
         if(user_id in user_ids or len(user_ids) == 0):
-
-            for key in user.val()[user_id].keys():                
-                if(user.val()[user_id][key] == tags[0]):
+            for key in user.val()[user_id].keys():
+                if(not isinstance(user.val()[user_id][key], list) and user.val()[user_id][key].lower() == tags[0].lower()):
                     filter_users.append(user_id)
-
+                elif(isinstance(user.val()[user_id][key], list)):
+                    for subkey in user.val()[user_id][key]:
+                        if(subkey.lower() == tags[0].lower()):
+                            filter_users.append(user_id)
        tags.remove(tags[0])
        return search_for_users_with_tags(tags, filter_users)
    else:

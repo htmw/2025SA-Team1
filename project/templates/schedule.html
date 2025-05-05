@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,7 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SchedulED</title>
     <link rel="stylesheet" href="/static/styles.css" />
-    <!-- Link to your CSS file -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script>
+      // Firebase config and initialization here...
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var userRole = "{{role}}"; // Assume role is stored after login
+        const form = document.getElementById("appointment-form");
+
+        if (userRole === "tutor") {
+          form.innerHTML = `
+            <h2>Set Your Availability</h2>
+            <form action="/tutorsubmit" method="POST">
+              <label for="aStart">Available Start Time:</label>
+              <input type="datetime-local" id="aStart" name="aStart" required />
+
+              <label for="aEnd">Available End Time:</label>
+              <input type="datetime-local" id="aEnd" name="aEnd" required />
+
+              <button type="submit">Set Availability</button>
+            </form>`;
+        } else {
+          form.innerHTML = `
+            <h2>Book a Session</h2>
+            <form action="/submit" method="POST">
+              <label for="sTime">Preferred Start Time:</label>
+              <input type="datetime-local" id="sTime" name="sTime" required />
+
+              <label for="eTime">Preferred End Time:</label>
+              <input type="datetime-local" id="eTime" name="eTime" required />
+
+              <button type="button" onclick="findTutors({{tutors_list}}, {{names_list}})">Find Available Tutors</button>
+
+              <div id="available-tutors"></div>
+
+              <button type="submit">Book Session</button>
+            </form>`;
+        }
+      });
+
+      function findTutors(tutors, names) {
+        // Placeholder: Replace with Firebase query logic
+        var output = `<label for="tutor">Select Tutor:</label>
+        <select id="tutor" name="tutor" required>
+        `;
+        for (var i = 0; i<tutors.length; i++ ){
+          output+=`<option value =\"${tutors[i]}\">${names[i]}</option>`
+        }
+        output += '</select>';
+
+        document.getElementById("available-tutors").innerHTML = output;
+      }
+    </script>
+    <style>
+      body {
+        font-family: monospace, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+
+      header {
+        background: #1613e0;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+      }
+
+      main {
+        padding: 20px;
+      }
+
+      form {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        margin: auto;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 5px;
+      }
+
+      input, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        background: #1613e0;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+      }
+
+      button:hover {
+        background: #45a049;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -15,38 +122,12 @@
 
     <main>
       <section id="appointment-form">
-        <h2>Schedule a Session</h2>
-        <form action="/submit" method="POST">
-          <label for="student-name">Student Name:</label>
-          <input type="text" id="student-name" name="student-name" required />
-
-          <label for="subject">Subject:</label>
-          <select id="subject" name="subject" required>
-            <option value="math">Math</option>
-            <option value="science">Science</option>
-            <option value="english">English</option>
-            <option value="history">History</option>
-          </select>
-
-          <label for="tutor">Select Tutor:</label>
-          <select id="tutor" name="tutor" required>
-            <option value="Sabrina">Sabrina</option>
-            <option value="Justin">Justin</option>
-          </select>
-
-          <label for="sTime">Start Time:</label>
-          <input type="datetime-local" id="sTime" name="sTime" required />
-
-          <label for="eTime">End Time:</label>
-          <input type="datetime-local" id="eTime" name="eTime" required />
-
-          <button type="submit">Schedule Session</button>
-        </form>
+        <!-- Dynamic content injected by script -->
       </section>
     </main>
 
     <footer>
-      <p>&copy; 2023 Tutoring Scheduler</p>
+      <p style="text-align:center">&copy; 2023 Tutoring Scheduler</p>
     </footer>
   </body>
 </html>

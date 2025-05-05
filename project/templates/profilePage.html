@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SchedulED - User Profile</title>
+  <style>
+    body {
+      font-family: monospace, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    header {
+      background: #1613e0;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    main {
+      padding: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .checkbox-group {
+      margin-bottom: 20px;
+    }
+    .checkbox-group label {
+      display: inline-block;
+      margin-right: 10px;
+    }
+    button {
+      background: #1613e0;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .session-item {
+      background: #eef;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SchedulED - User Profile</h1>
+  </header>
+  <main>
+    <div class="section">
+      <form id="profile-form", method="POST">
+        <h2>Profile Details</h2>
+        <label for="firstname">First Name</label>
+        <input type="text" id="firstname" name="firstname" placeholder="Jane" required />
+
+        <label for="lastname">Last Name</label>
+        <input type="text" id="lastname" name="lastname" placeholder="Doe" required />
+
+        <label for="user-type">User Type</label>
+        <select id="user-type" name="user-type" onchange="handleUserTypeChange()" required >
+          <option value="">--Select--</option>
+          <option value="student">Student</option>
+          <option value="tutor">Tutor</option>
+          <option value="parent">Parent</option>
+        </select>
+
+        <div id="extra-fields"></div>
+
+        <button type="submit">Update Profile</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    function handleUserTypeChange() {
+      const userType = document.getElementById('user-type').value;
+      const extraFields = document.getElementById('extra-fields');
+      extraFields.innerHTML = '';
+
+      if (userType === 'tutor') {
+        extraFields.innerHTML = `
+          <label>Subjects You Tutor</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="subjects" value="Math"> Math</label>
+            <label><input type="checkbox" name="subjects" value="Science"> Science</label>
+            <label><input type="checkbox" name="subjects" value="English"> English</label>
+            <label><input type="checkbox" name="subjects" value="History"> History</label>
+          </div>
+          <label>Age Range You Teach</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="ages" value="Elementary"> Elementary</label>
+            <label><input type="checkbox" name="ages" value="Middle School"> Middle School</label>
+            <label><input type="checkbox" name="ages" value="High School"> High School</label>
+            <label><input type="checkbox" name="ages" value="College"> College</label>
+          </div>
+        `;
+      } else if (userType === 'student' || userType === 'parent') {
+        extraFields.innerHTML = `
+          <label>Subjects You're Looking For</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="subjects-needed" value="Math"> Math</label>
+            <label><input type="checkbox" name="subjects-needed" value="Science"> Science</label>
+            <label><input type="checkbox" name="subjects-needed" value="English"> English</label>
+            <label><input type="checkbox" name="subjects-needed" value="History"> History</label>
+          </div>
+          <label>Student Age</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="student-age" value="Elementary"> Elementary</label>
+            <label><input type="checkbox" name="student-age" value="Middle School"> Middle School</label>
+            <label><input type="checkbox" name="student-age" value="High School"> High School</label>
+            <label><input type="checkbox" name="student-age" value="College"> College</label>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
+

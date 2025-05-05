@@ -1,36 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SchedulED - Login</title>
-<link rel="stylesheet" href="/static/styles.css" />
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-<script src="/static/googleauth.js"></script>
-<script>
-    function gotoSignup(){
-        window.location.href = "/create-account"
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SchedulED - Login</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <script src="/static/googleauth.js"></script>
+  <script>
+    function gotoSignup() {
+      window.location.href = "/create-account";
     }
-    function googleSignIn(){
-        window.location.href = "/authorize"
+    function googleSignIn() {
+      window.location.href = "/authorize";
+    }
+  </script>
+  <style>
+    body {
+      font-family: monospace, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
     }
 
-</script>
+    header {
+      background: #1613e0;
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    #login-form {
+      max-width: 400px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    button {
+      background: #1613e0;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      margin-top: 15px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1em;
+      color: #555;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-<div id="login-form">
-<h2>Login</h2>
-<form action="/" method="POST">
-<label for="username">Username (Email):</label>
-<input type="text" id="username" name="username" required />
-<label for="password">Password:</label>
-<input type="password" id="password" name="password" required />
-<button type="submit">Login</button>
-<button onclick="gotoSignup()">No account? Sign up now!</button>
-<p style="color: red;"></p>
-</form>
-<button id="google-signin-button" onclick="googleSignIn()">Sign in with Google</button>
-</div>
+  <header>
+    <h1>SchedulED</h1>
+  </header>
+
+  <main>
+    <div id="login-form">
+      <h2>Login</h2>
+      <p class="subtitle">Schedule a tutoring session now!</p>
+      <button id="google-signin-button" onclick="googleSignIn()">Sign in with Google</button>
+    </div>
+  </main>
 </body>
 </html>
