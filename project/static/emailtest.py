@@ -2,22 +2,19 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 
-email_sender = 'funaverage57@gmail.com'
-app_pw = ''
-email_receiver = 'justinriv326@gmail.com'
+email_sender = 'otherthanteam1schedule@gmail.com'
+app_pw = 'wvjx ownt kajh qtwm'
+email_receiver = 'funaverage57@gmail.com'
 
-subject = 'Python Test'
-body = """
-Man this is crazy
-you just got send an email by python code
+name = "hi"
+othername = "hi2"
+time = "12:00pm"
 
-brother isnt that insane
+subject = 'You have a session soon!'
+body = f"""
+Hey {name},
 
-english fail
-
-this statement is false
-
-this message was indeed sent by bot.
+You have a session with {othername} at {time} tomorrow!
 """
 
 em = EmailMessage()
@@ -32,4 +29,4 @@ with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = context) as smtp:
     smtp.login(email_sender, app_pw)
     smtp.sendmail(email_sender, email_receiver, em.as_string())
 
-print("end of file")
+print("email send!")

@@ -1,5 +1,6 @@
 import firebase_admin
 from firebase_admin import credentials, auth
+from _thread import *
 import pyrebase
 from flask import *
 from datetime import datetime, timedelta
@@ -8,6 +9,10 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import  Flow
 from googleapiclient.discovery import build
 import requests
+import tzlocal
+from email.message import EmailMessage
+import ssl
+import smtplib
 
 #FOR TESTING PURPOSES ONLY SHOULD NOT BE IN PRODUCTION CODE
 import os
@@ -28,6 +33,7 @@ app.secret_key = "1bc91f883a5737c0a5105cf2fa1130ce"
 authpy = firebase.auth()
 db = firebase.database()
 user =None
+timezone_abbr = tzlocal.get_localzone_name()
 
 
 GOOGLE_CLIENT_ID = calendar_data['client_id']
@@ -38,7 +44,6 @@ SCOPES = ["https://www.googleapis.com/auth/calendar", "https://www.googleapis.co
           "https://www.googleapis.com/auth/userinfo.email","openid"]
 
 REDIRECT_URI = "http://localhost:5000/oauth2callback"
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -133,7 +138,11 @@ def error_code(ecode):
 
 @app.route('/schedule')
 def schedule():
-    tutors = search_for_users_with_tags(['tutor'])
+    search_terms = ['tutor']
+    subjects = get_value_with_uid_key(session["userInfo"]['id'], "subject")
+    for subject in subjects:
+        search_terms.append(subject)
+    tutors = search_for_users_with_tags(search_terms)
     names = []
     for tutor in tutors:
         names.append(get_value_with_uid_key(tutor, 'firstname'))
@@ -286,11 +295,11 @@ def submit():
         'description': 'Event created with Flask and Google Calendar API',
         'start': {
             'dateTime': f"{startTime}",
-            'timeZone': 'UTC',
+            'timeZone': f'{timezone_abbr}',
         },
         'end': {
             'dateTime': f"{endTime}",
-            'timeZone': 'UTC',
+            'timeZone': f'{timezone_abbr}',
             },
         }
 
@@ -299,7 +308,7 @@ def submit():
         print(e)
         return redirect('/error/400')
     
-    new_data = {"StudentID": session['userInfo']['id'] ,"TutorID": tutor,"StartTime":startTime,"EndTime":endTime}
+    new_data = {"StudentID": session['userInfo']['id'] ,"TutorID": tutor,"StartTime":startTime,"EndTime":endTime, "NotificationFlag": False}
     db.child("events").push(new_data)    
 
     return redirect(url_for("calendar_page"))
@@ -393,6 +402,65 @@ def search_for_users_with_tags(tags, user_ids = []):
    else:
       user_ids = list(dict.fromkeys(user_ids))
       return user_ids
+
+def get_first_name_with_uid(uid):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()['firstname']
+
+def get_email_with_uid(uid):
+    keys1 = db.child("users").get()
+    for key1 in keys1:
+        user_id = list(key1.val().keys())[0]
+        if(user_id == uid):
+            keys2 = db.child("users").child(key1.key()).get()
+            for key2 in keys2:
+                return key2.val()['email']
+
+def send_24_hour_email(personid, otherpersonid, time):
+    email_sender = 'otherthanteam1schedule@gmail.com'
+    app_pw = 'wvjx ownt kajh qtwm'
+    email_receiver = get_email_with_uid(personid)
+
+    subject = 'You have a session soon!'
+    body = f"""
+    Hey {get_first_name_with_uid(personid)},
+
+    You have a session with {get_first_name_with_uid(otherpersonid)} at {time} tomorrow!
+    """
+
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    em.set_content(body)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = context) as smtp:
+        smtp.login(email_sender, app_pw)
+        smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+    print("email send!")
+
+def email_daemon():
+    while(True):
+        schedules = db.child("events").get()
+        for schedule in schedules:
+            start_time_object =datetime.strptime(schedule.val()['StartTime'],"%Y-%m-%dT%H:%M:%S")
+            now_time_object =datetime.now()
+            time_diff=(start_time_object - now_time_object)
+            if time_diff<timedelta(1) and not schedule.val()['NotificationFlag']:
+                for key in db.child("events").child(schedule.key()).get():
+                    db.child("events").child(schedule.key()).update({"NotificationFlag":True})
+                send_24_hour_email(schedule.val()['StudentID'], schedule.val()['TutorID'], start_time_object.strftime("%Y-%m-%d %H:%M:%S"))
+                send_24_hour_email(schedule.val()['TutorID'], schedule.val()['StudentID'], start_time_object.strftime("%Y-%m-%d %H:%M:%S"))
+
+start_new_thread(email_daemon, ())
 
 app.run(debug=True)
  

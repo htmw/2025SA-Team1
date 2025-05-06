@@ -173,13 +173,62 @@ def search_for_users_with_tags(tags, user_ids = []):
       user_ids = list(dict.fromkeys(user_ids))
       return user_ids
    
+
+
 #print(search_for_users_with_tags(get_value_with_uid_key('110209026888438200235', 'subject')))
 # result = search_for_users_with_tags(['tutor'])
 # print(result)
 
-# now = datetime.now()
-# print(now.astimezone().tzinfo)
+# import tzlocal
+# print(tzlocal.get_localzone_name())
 
+from email.message import EmailMessage
+import ssl
+import smtplib
+
+def send_24_hour_email(personid, otherpersonid, time):
+    email_sender = 'otherthanteam1schedule@gmail.com'
+    app_pw = 'wvjx ownt kajh qtwm'
+    email_receiver = get_email_with_uid(personid)
+
+    subject = 'You have a session soon!'
+    body = f"""
+    Hey {get_first_name_with_uid(personid)},
+
+    You have a session with {get_first_name_with_uid(otherpersonid)} at {time} tomorrow!
+    """
+
+    em = EmailMessage()
+    em['From'] = email_sender
+    em['To'] = email_receiver
+    em['Subject'] = subject
+    em.set_content(body)
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context = context) as smtp:
+        smtp.login(email_sender, app_pw)
+        smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+    print("email send!")
+
+
+def email_daemon():
+    schedules = db.child("events").get()
+    for schedule in schedules:
+        start_time_object =datetime.strptime(schedule.val()['StartTime'],"%Y-%m-%dT%H:%M:%S")
+        now_time_object =datetime.now()
+        time_diff=(start_time_object - now_time_object)
+        if time_diff<timedelta(1) and not schedule.val()['NotificationFlag']:
+            for key in db.child("events").child(schedule.key()).get():
+                db.child("events").child(schedule.key()).update({"NotificationFlag":True})
+            send_24_hour_email(schedule.val()['StudentID'], schedule.val()['TutorID'], start_time_object.strftime("%Y-%m-%d %H:%M:%S"))
+            send_24_hour_email(schedule.val()['TutorID'], schedule.val()['StudentID'], start_time_object.strftime("%Y-%m-%d %H:%M:%S"))
+            
+        #print(schedule.val()['NotificationFlag'])
+
+email_daemon()
+#print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 # keys1 = db.child("users").get()
 # for key1 in keys1:
 #     user_id = list(key1.val().keys())[0]
